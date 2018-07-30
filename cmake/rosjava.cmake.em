@@ -85,10 +85,11 @@ macro(catkin_rosjava_setup)
     ###################################
     # Execution
     ###################################
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src)
     add_custom_target(gradle-${PROJECT_NAME} ALL
         #COMMAND ${ROSJAVA_ENV} ${CATKIN_ENV} "env" "|" "grep" "ROS" 
-        COMMAND ${ROSJAVA_ENV} ${CATKIN_ENV} ${${PROJECT_NAME}_gradle_BINARY} ${gradle_options} ${gradle_tasks}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND ${ROSJAVA_ENV} ${CATKIN_ENV} ${${PROJECT_NAME}_gradle_BINARY} ${gradle_options} --project-dir ${CMAKE_CURRENT_SOURCE_DIR} -PbuildDir=${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src ${gradle_tasks}
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src
         VERBATIM
         COMMENT "Gradling tasks for ${PROJECT_NAME}"
     )
@@ -109,9 +110,10 @@ macro(catkin_rosjava_setup)
     if(NOT TARGET gradle-clean)
         add_custom_target(gradle-clean)
     endif()
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src)
     add_custom_target(gradle-clean-${PROJECT_NAME}
         COMMAND ${CATKIN_ENV} ${${PROJECT_NAME}_gradle_BINARY} clean
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src
         COMMENT "Cleaning gradle project for ${PROJECT_NAME}"
     )
     add_dependencies(gradle-clean gradle-clean-${PROJECT_NAME})
@@ -131,10 +133,11 @@ macro(catkin_android_setup)
     else()
       set(gradle_tasks ${ARGV})
     endif()
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src)
     add_custom_target(gradle-${PROJECT_NAME}
         ALL
-        COMMAND ${ROSJAVA_ENV} ${CATKIN_ENV} ${${PROJECT_NAME}_gradle_BINARY} ${gradle_tasks}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND ${ROSJAVA_ENV} ${CATKIN_ENV} ${${PROJECT_NAME}_gradle_BINARY} --project-dir ${CMAKE_CURRENT_SOURCE_DIR} -PbuildDir=${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src ${gradle_tasks}
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src
         VERBATIM
     )
     catkin_package_xml()
@@ -147,9 +150,10 @@ macro(catkin_android_setup)
     if(NOT TARGET gradle-clean)
         add_custom_target(gradle-clean)
     endif()
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src)
     add_custom_target(gradle-clean-${PROJECT_NAME}
         COMMAND ${CATKIN_ENV} ${${PROJECT_NAME}_gradle_BINARY} clean
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-src
     )
     add_dependencies(gradle-clean gradle-clean-${PROJECT_NAME})
 endmacro()
